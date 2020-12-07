@@ -38,6 +38,14 @@ def return_inputs():
 
 
 # bouton pour exécuter la requête
-url = ''
-params = {'d_long':, 'd_lat':, 'a_long':, 'a_lat':}
+d_long = 'theo'
+d_lat = 'test'
+a_long = 'zfz'
+a_lat = '32'
+
+url = 'http://127.0.0.1:8000/danger'
+params = {'d_long':d_long, 'd_lat':d_lat, 'a_long':a_long, 'a_lat':a_lat}
 response = requests.get(url, params=params)
+danger = response.json()
+danger
+departure

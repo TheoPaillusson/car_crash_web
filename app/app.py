@@ -38,14 +38,22 @@ def return_inputs():
 
 
 # bouton pour exécuter la requête
-d_long = 'theo'
-d_lat = 'test'
-a_long = 'zfz'
-a_lat = '32'
+if st.button('Predict'):
+    # print is visible in server output, not in the page
+    print('button clicked!')
+    st.write('I was clicked 🎉')
+    d_long = 'theo'
+    d_lat = 'test'
+    a_long = 'zfz'
+    a_lat = '32'
 
-url = 'http://127.0.0.1:8000/danger'
-params = {'d_long':d_long, 'd_lat':d_lat, 'a_long':a_long, 'a_lat':a_lat}
-response = requests.get(url, params=params)
-danger = response.json()
-danger
-departure
+    url = 'http://127.0.0.1:8000/danger'
+    params = {'departure':departure, 'arrival':arrival}
+    response = requests.get(url, params=params)
+    danger = response.json()
+    danger
+else:
+    st.write('I was not clicked 😞')
+
+
+

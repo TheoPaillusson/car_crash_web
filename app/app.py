@@ -3,55 +3,63 @@ import streamlit as st
 import datetime
 import requests
 import ipdb
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+from itinerary import get_coordinates, itinerary
+import json
+from fastapi import FastAPI
 
-st.markdown("""# Predict the dangerousness of a car trip
 
-How dangerous is your trip today ?""")
+api = FastAPI()
+
+# for google api key
+dotenv_path = join(dirname(dirname(__file__)), '.env')
+load_dotenv(dotenv_path)
+google_map_api = os.environ.get('GOOGLE_MAP_API')
 
 
 
-# input
+st.markdown("""# Predict the dangerousness of a car trip 🚗
+
+## How dangerous is your trip today ?""")
+
+
+# ----------------------------------
+############### INPUT ##############
+# ----------------------------------
+
+# departure & arrival
 departure = st.text_input('Departure')
 arrival = st.text_input('Arrival')
 
-# return departure & arrival inputs
-def return_inputs():
-    '''function wich return the departure & arrival entered by user'''
-    return departure, arrival
+# day of the week and datetime
+days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+day = st.selectbox('Select the day of your departure', days)
 
-# @st.cache
-# def get_map_data():
-#     print('get_map_data called')
-#     return pd.DataFrame(
-#             np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
-#             columns=['lat', 'lon']
-#         )
+hour = st.text_input('Hour of departure')
 
-# if st.checkbox('Show map', False):
-#     df = get_map_data()
-
-#     st.map(df)
-# else:
-#     from PIL import Image
-#     image = Image.open('images/map.png')
-#     st.image(image, caption='map', use_column_width=False)
-
+# ----------------------------------
+############### API ################
+# ----------------------------------
 
 # bouton pour exécuter la requête
 if st.button('Predict'):
-    # print is visible in server output, not in the page
-    print('button clicked!')
     st.write('I was clicked 🎉')
-    d_long = 'theo'
-    d_lat = 'test'
-    a_long = 'zfz'
-    a_lat = '32'
+    # get coordinates from google api & return dict of roads
+    coordinates = get_coordinates(departure=departure, arrival=arrival, api=google_map_api)
+    itineraire = itinerary(coordinates)
+    st.write(type(itineraire))
+    url_iti = 'http://127.0.0.1:8000/danger'
+    
+    headers = {'content-type' : 'application/json'}
 
-    url = 'http://127.0.0.1:8000/danger'
-    params = {'departure':departure, 'arrival':arrival}
-    response = requests.get(url, params=params)
-    danger = response.json()
-    danger
+
+    body = {'steps':itineraire, 'day':day, 'hour':hour}
+    st.write(body)
+    request = requests.post(url_iti, json=body, headers=headers)
+    r = request.json()
+    r
 else:
     st.write('I was not clicked 😞')
 

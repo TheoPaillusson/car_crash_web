@@ -28,3 +28,11 @@ def itinerary(coordinates):
      del distances[-1]
      route = dict(zip(names,distances))
      return route
+
+# # get map
+def get_geojson(coordinates):
+    '''Takes coordinates and return geojson'''
+    url = f'http://router.project-osrm.org/route/v1/driving/{coordinates[0]},{coordinates[1]};{coordinates[2]},{coordinates[3]}?steps=true&geometries=geojson'
+    response = requests.get(url).json()
+    geojson = response['routes'][0]['geometry']['coordinates']
+    return geojson

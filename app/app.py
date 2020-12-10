@@ -14,6 +14,10 @@ import pydeck as pdk
 
 #test map
 
+#test map
+import pandas as pd
+import numpy as np
+import pydeck as pdk
 
 api = FastAPI()
 
@@ -89,5 +93,3 @@ if st.button('Predict'):
     r
 else:
     st.write('I was not clicked 😞')
-
-

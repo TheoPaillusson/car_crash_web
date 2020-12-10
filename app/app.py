@@ -50,20 +50,8 @@ hour = st.text_input('Hour of departure')
 ######### GEOJSON DF ###############
 geojson = get_geojson(coordinates=get_coordinates(departure=departure, arrival=arrival, api=google_map_api))
 
-st.write(geojson)
-
-
-df = pd.DataFrame(geojson, columns=['lat', 'lon'])
-df['lon2'] = df['lon']
-df['lon'] = df['lat']
-df['lat'] = df['lon2']
-
-
-st.write(df)
-
-st.map(df)
-
-
+df = pd.DataFrame(columns=['coordinates'])
+df.at[0,'coordinates'] = geojson
 
 # ----------------------------------
 ############### API ################
@@ -75,8 +63,6 @@ if st.button('Predict'):
     # get coordinates from google api & return dict of roads
     coordinates = get_coordinates(departure=departure, arrival=arrival, api=google_map_api)
     itineraire = itinerary(coordinates)
-    st.write(itineraire)
-
     # convert dataframe to json to send to back
     trip = itineraire.to_json(orient='split')
     parsed = json.loads(trip)
@@ -87,9 +73,33 @@ if st.button('Predict'):
 
 
     body = {'steps':parsed, 'day':day, 'hour':hour}
-    st.write(body)
     request = requests.post(url_iti, json=body, headers=headers)
     r = request.json()
     r
 else:
     st.write('I was not clicked 😞')
+
+
+
+st.pydeck_chart(pdk.Deck(
+        map_style='mapbox://styles/mapbox/light-v9',
+        initial_view_state=pdk.ViewState(
+            latitude=34.0550,
+            longitude=-118.2493,
+            zoom=11,
+            pitch=40,
+        ),
+        layers=[
+            pdk.Layer(
+                "TripsLayer",
+                df,
+                get_path="coordinates",
+                get_color=  [74,128,245],
+                opacity=10,
+                width_min_pixels=7,
+                rounded=True,
+                trail_length=600,
+                current_time=500,
+            )
+        ]
+    ))

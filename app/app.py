@@ -8,11 +8,12 @@ from dotenv import load_dotenv
 from itinerary import get_coordinates, itinerary, get_geojson
 import json
 from fastapi import FastAPI
-
-#test map
 import pandas as pd
 import numpy as np
 import pydeck as pdk
+
+#test map
+
 
 api = FastAPI()
 
@@ -41,6 +42,25 @@ day = st.selectbox('Select the day of your departure', days)
 
 hour = st.text_input('Hour of departure')
 
+
+######### GEOJSON DF ###############
+geojson = get_geojson(coordinates=get_coordinates(departure=departure, arrival=arrival, api=google_map_api))
+
+st.write(geojson)
+
+
+df = pd.DataFrame(geojson, columns=['lat', 'lon'])
+df['lon2'] = df['lon']
+df['lon'] = df['lat']
+df['lat'] = df['lon2']
+
+
+st.write(df)
+
+st.map(df)
+
+
+
 # ----------------------------------
 ############### API ################
 # -------------------
@@ -51,13 +71,18 @@ if st.button('Predict'):
     # get coordinates from google api & return dict of roads
     coordinates = get_coordinates(departure=departure, arrival=arrival, api=google_map_api)
     itineraire = itinerary(coordinates)
-    st.write(type(itineraire))
+    st.write(itineraire)
+
+    # convert dataframe to json to send to back
+    trip = itineraire.to_json(orient='split')
+    parsed = json.loads(trip)
+
     url_iti = 'http://127.0.0.1:8000/danger'
 
     headers = {'content-type' : 'application/json'}
 
 
-    body = {'steps':itineraire, 'day':day, 'hour':hour}
+    body = {'steps':parsed, 'day':day, 'hour':hour}
     st.write(body)
     request = requests.post(url_iti, json=body, headers=headers)
     r = request.json()
@@ -66,21 +91,3 @@ else:
     st.write('I was not clicked 😞')
 
 
-######################## TESTTTTTTT ##############################
-import requests
-
-
-route = itinerary(coordinates)
-
-st.dataframe(route)
-
-
-######### GEOJSON DF ###############
-geojson = get_geojson(coordinates = get_coordinates(departure=departure, arrival=arrival, api=google_map_api))
-
-df = pd.DataFrame(geojson, columns=['lat', 'lon'])
-df['lon2'] = df['lon']
-df['lon'] = df['lat']
-df['lat'] = df['lon2']
-
-st.map(df)

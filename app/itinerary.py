@@ -1,5 +1,6 @@
 #takes two addresses, returns route
 import requests
+import pandas as pd
 
 def get_coordinates(departure, arrival, api):
     ''' Takes departure & arrival in string format and return GPS coordinates in a tuple (lon_start, lat_start, lon_end, lat_end)'''

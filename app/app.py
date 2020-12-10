@@ -1,4 +1,3 @@
-
 import streamlit as st
 import datetime
 import requests
@@ -6,10 +5,14 @@ import ipdb
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from itinerary import get_coordinates, itinerary
+from itinerary import get_coordinates, itinerary, get_geojson
 import json
 from fastapi import FastAPI
 
+#test map
+import pandas as pd
+import numpy as np
+import pydeck as pdk
 
 api = FastAPI()
 
@@ -23,7 +26,6 @@ google_map_api = os.environ.get('GOOGLE_MAP_API')
 st.markdown("""# Predict the dangerousness of a car trip 🚗
 
 ## How dangerous is your trip today ?""")
-
 
 # ----------------------------------
 ############### INPUT ##############
@@ -41,7 +43,7 @@ hour = st.text_input('Hour of departure')
 
 # ----------------------------------
 ############### API ################
-# ----------------------------------
+# -------------------
 
 # bouton pour exécuter la requête
 if st.button('Predict'):
@@ -51,7 +53,7 @@ if st.button('Predict'):
     itineraire = itinerary(coordinates)
     st.write(type(itineraire))
     url_iti = 'http://127.0.0.1:8000/danger'
-    
+
     headers = {'content-type' : 'application/json'}
 
 
@@ -64,4 +66,21 @@ else:
     st.write('I was not clicked 😞')
 
 
+######################## TESTTTTTTT ##############################
+import requests
 
+
+route = itinerary(coordinates)
+
+st.dataframe(route)
+
+
+######### GEOJSON DF ###############
+geojson = get_geojson(coordinates = get_coordinates(departure=departure, arrival=arrival, api=google_map_api))
+
+df = pd.DataFrame(geojson, columns=['lat', 'lon'])
+df['lon2'] = df['lon']
+df['lon'] = df['lat']
+df['lat'] = df['lon2']
+
+st.map(df)

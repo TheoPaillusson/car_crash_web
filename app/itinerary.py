@@ -1,5 +1,6 @@
 #takes two addresses, returns route
 import requests
+import pandas as pd
 
 def get_coordinates(departure, arrival, api):
     ''' Takes departure & arrival in string format and return GPS coordinates in a tuple (lon_start, lat_start, lon_end, lat_end)'''
@@ -14,17 +15,31 @@ def get_coordinates(departure, arrival, api):
     return lon_start, lat_start, lon_end, lat_end
 
 def itinerary(coordinates):
-     ''' Takes GPS coordinates and return route in a dict {name:distance}'''
-     url = f'http://router.project-osrm.org/route/v1/driving/{coordinates[0]},{coordinates[1]};{coordinates[2]},{coordinates[3]}?overview=false&steps=true'
-     response = requests.get(url).json()
-     step = response['routes'][0]['legs'][0]['steps']
-     names = []
-     for i in range(len(step)):
-         names.append(response['routes'][0]['legs'][0]['steps'][i]['name'])
-     del names[-1]
-     distances = []
-     for i in range(len(step)):
-         distances.append(response['routes'][0]['legs'][0]['steps'][i]['distance'])
-     del distances[-1]
-     route = dict(zip(names,distances))
-     return route
+    ''' Takes GPS coordinates and return route in a dict {name:distance}'''
+    url = f'http://router.project-osrm.org/route/v1/driving/{coordinates[0]},{coordinates[1]};{coordinates[2]},{coordinates[3]}?overview=false&steps=true'
+    response = requests.get(url).json()
+    step = response['routes'][0]['legs'][0]['steps']
+    names = []
+    count = 0
+    for i in range(len(step)):
+        if response['routes'][0]['legs'][0]['steps'][i]['name'] == "":
+            response['routes'][0]['legs'][0]['steps'][i]['name'] = count
+            count += 1
+        names.append(response['routes'][0]['legs'][0]['steps'][i]['name'])
+    del names[-1]
+    distances = []
+    for i in range(len(step)):
+        distances.append(response['routes'][0]['legs'][0]['steps'][i]['distance'])
+    del distances[-1]
+    route = pd.DataFrame(columns=['names','distances'])
+    route.names = names
+    route.distances = distances
+    return route
+
+# # get map
+def get_geojson(coordinates):
+    '''Takes coordinates and return geojson'''
+    url = f'http://router.project-osrm.org/route/v1/driving/{coordinates[0]},{coordinates[1]};{coordinates[2]},{coordinates[3]}?steps=true&geometries=geojson'
+    response = requests.get(url).json()
+    geojson = response['routes'][0]['geometry']['coordinates']
+    return geojson

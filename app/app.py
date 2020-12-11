@@ -12,14 +12,17 @@ import pandas as pd
 import numpy as np
 import pydeck as pdk
 
-#test map
-
-#test map
-import pandas as pd
-import numpy as np
-import pydeck as pdk
-
 api = FastAPI()
+
+################ SIDEBAR ################
+st.set_page_config(
+            page_title="CAR CRASH", # => Quick reference - Streamlit
+            page_icon=":car:",
+            layout="centered", # wide
+            initial_sidebar_state="auto") # c
+​
+st.sidebar.write(f'<a href="#Prediction">Prediction</a>', unsafe_allow_html=True)
+
 
 # for google api key
 dotenv_path = join(dirname(dirname(__file__)), '.env')
@@ -28,8 +31,8 @@ google_map_api = os.environ.get('GOOGLE_MAP_API')
 
 
 
-st.markdown("""# Predict the dangerousness of a car trip 🚗
-
+st.markdown("""# Predict the dangerousness of a car trip 🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗
+​
 ## How dangerous is your trip today ?""")
 
 # ----------------------------------
@@ -46,6 +49,23 @@ day = st.selectbox('Select the day of your departure', days)
 
 hour = st.text_input('Hour of departure')
 
+######### COEFICIANTS ###############
+
+if st.checkbox('Could your trip be any riskier?'):
+    st.write(''' :iphone: (handsfree) x1.05''')   
+    st.write('''
+        :iphone: (handled) x1.29''')
+    
+    st.write(''':wine_glass: x2.31''')
+    st.write(''':syringe: x20.02''')
+    st.write(''':syringe: & :wine_glass: x21.18''')
+    st.write(''':syringe: & :wine_glass: & :iphone: : x23.19 
+​
+        ''')
+​
+st.write(f'<a name="Prediction"></a>', unsafe_allow_html=True)
+'# Prediction'
+
 
 ######### GEOJSON DF ###############
 geojson = get_geojson(coordinates=get_coordinates(departure=departure, arrival=arrival, api=google_map_api))
@@ -55,7 +75,7 @@ df.at[0,'coordinates'] = geojson
 
 # ----------------------------------
 ############### API ################
-# -------------------
+# ----------------------------------
 
 # bouton pour exécuter la requête
 if st.button('Predict'):
@@ -80,7 +100,7 @@ else:
     st.write('I was not clicked 😞')
 
 
-
+######## trip on map ################
 st.pydeck_chart(pdk.Deck(
         map_style='mapbox://styles/mapbox/light-v9',
         initial_view_state=pdk.ViewState(

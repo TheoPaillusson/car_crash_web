@@ -12,26 +12,19 @@ import pandas as pd
 import numpy as np
 import pydeck as pdk
 
-api = FastAPI()
-
 ################ SIDEBAR ################
 st.set_page_config(
             page_title="CAR CRASH", # => Quick reference - Streamlit
             page_icon=":car:",
             layout="centered", # wide
-            initial_sidebar_state="auto") # c
-
-st.sidebar.write(f'<a href="#Prediction">Prediction</a>', unsafe_allow_html=True)
-
+            initial_sidebar_state="auto") #
 
 # for google api key
 dotenv_path = join(dirname(dirname(__file__)), '.env')
 load_dotenv(dotenv_path)
 google_map_api = os.environ.get('GOOGLE_MAP_API')
 
-
-
-st.markdown("""# Predict the dangerousness of a car trip 🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗
+st.markdown("""# Predict the dangerousness of a car trip
 ​
 ## How dangerous is your trip today ?""")
 
@@ -40,8 +33,8 @@ st.markdown("""# Predict the dangerousness of a car trip 🚗🚗🚗🚗🚗�
 # ----------------------------------
 
 # departure & arrival
-departure = st.text_input('Departure')
-arrival = st.text_input('Arrival')
+departure = st.text_input('Departure', 'Disney Concert Hall')
+arrival = st.text_input('Arrival', 'Venice Beach')
 
 # day of the week and datetime
 days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -53,17 +46,17 @@ hour = st.selectbox('Select the time of your departure', time)
 
 ######### COEFICIANTS ###############
 # OK
-if st.checkbox('Could your trip be any riskier?'):
-    st.write(''' :iphone: (handsfree) x1.05''')   
-    st.write('''
-        :iphone: (handled) x1.29''')
-    st.write(''':wine_glass: x2.31''')
-    st.write(''':syringe: x20.02''')
-    st.write(''':syringe: & :wine_glass: x21.18''')
-    st.write(''':syringe: & :wine_glass: & :iphone: : x23.19 ''')
+# if st.checkbox('Could your trip be any riskier?'):
+#     st.write(''' :iphone: (handsfree) x1.05''')
+#     st.write('''
+#         :iphone: (handled) x1.29''')
+#     st.write(''':wine_glass: x2.31''')
+#     st.write(''':syringe: x20.02''')
+#     st.write(''':syringe: & :wine_glass: x21.18''')
+#     st.write(''':syringe: & :wine_glass: & :iphone: : x23.19 ''')
 
-st.write(f'<a name="Prediction"></a>', unsafe_allow_html=True)
-'# Prediction'
+# st.write(f'<a name="Prediction"></a>', unsafe_allow_html=True)
+# '# Prediction'
 
 ######### GEOJSON DF ###############
 geojson = get_geojson(coordinates=get_coordinates(departure=departure, arrival=arrival, api=google_map_api))
@@ -94,10 +87,8 @@ if st.button('Predict'):
     request = requests.post(url_iti, json=body, headers=headers)
     r = request.json()
     r
-else:
-    st.write('I was not clicked 😞')
 
-
+1
 ######## trip on map ################
 st.pydeck_chart(pdk.Deck(
         map_style='mapbox://styles/mapbox/light-v9',
@@ -121,3 +112,5 @@ st.pydeck_chart(pdk.Deck(
             )
         ]
     ))
+
+

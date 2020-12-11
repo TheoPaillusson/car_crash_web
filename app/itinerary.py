@@ -36,6 +36,7 @@ def itinerary(coordinates):
     route.distances = distances
     return route
 
+
 # # get map
 def get_geojson(coordinates):
     '''Takes coordinates and return geojson'''
@@ -43,3 +44,4 @@ def get_geojson(coordinates):
     response = requests.get(url).json()
     geojson = response['routes'][0]['geometry']['coordinates']
     return geojson
+

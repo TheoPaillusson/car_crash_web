@@ -20,7 +20,7 @@ st.set_page_config(
             page_icon=":car:",
             layout="centered", # wide
             initial_sidebar_state="auto") # c
-​
+
 st.sidebar.write(f'<a href="#Prediction">Prediction</a>', unsafe_allow_html=True)
 
 
@@ -47,25 +47,23 @@ arrival = st.text_input('Arrival')
 days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 day = st.selectbox('Select the day of your departure', days)
 
-hour = st.text_input('Hour of departure')
+time = [i for i in range(24)]
+hour = st.selectbox('Select the time of your departure', time)
+
 
 ######### COEFICIANTS ###############
-
+# OK
 if st.checkbox('Could your trip be any riskier?'):
     st.write(''' :iphone: (handsfree) x1.05''')   
     st.write('''
         :iphone: (handled) x1.29''')
-    
     st.write(''':wine_glass: x2.31''')
     st.write(''':syringe: x20.02''')
     st.write(''':syringe: & :wine_glass: x21.18''')
-    st.write(''':syringe: & :wine_glass: & :iphone: : x23.19 
-​
-        ''')
-​
+    st.write(''':syringe: & :wine_glass: & :iphone: : x23.19 ''')
+
 st.write(f'<a name="Prediction"></a>', unsafe_allow_html=True)
 '# Prediction'
-
 
 ######### GEOJSON DF ###############
 geojson = get_geojson(coordinates=get_coordinates(departure=departure, arrival=arrival, api=google_map_api))

@@ -6,7 +6,6 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from itinerary import get_coordinates, itinerary, get_geojson
 import json
-from fastapi import FastAPI
 import pandas as pd
 import numpy as np
 import pydeck as pdk

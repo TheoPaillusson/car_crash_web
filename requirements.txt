@@ -3,3 +3,4 @@ numpy
 pydeck
 requests
 streamlit
+python-dotenv
